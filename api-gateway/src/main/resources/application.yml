@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/books/**,/api/authors/**
+        - id: member-service
+          uri: lb://member-service
+          predicates:
+            - Path=/api/auth/**,/api/members/**
+        - id: circulation-service
+          uri: lb://circulation-service
+          predicates:
+            - Path=/api/circulation/**
+
+app:
+  jwt:
+    # Must be identical to member-service.
+    secret: ${JWT_SECRET:local-dev-secret-change-me-local-dev-secret-change-me-123456}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
